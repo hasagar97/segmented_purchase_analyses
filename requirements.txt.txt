@@ -1,0 +1,4 @@
+dask==2022.4.1
+numpy==1.22.3
+pandas==1.4.2
+notebook==6.4.2
