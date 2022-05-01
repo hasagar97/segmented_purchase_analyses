@@ -8,10 +8,6 @@ from modules.readingModule import *
 from modules.statsGenerationModule import *
 from modules.humanReadableModule import *
 
-
-
-
-
 """# Driver Module"""
 
 
@@ -36,8 +32,8 @@ def analyse_and_print_observations(df, metric, SEGMENT_CATEGORIES, NUMERATOR_COL
                                                                                                   DENOMINATOR_COLUMN)
 
     ## Creatig comparision columns for filtering
-    metric_analysis_df["value_change_wrt_overall"] = (metric_analysis_df[
-                                                          NUMERATOR_COLUMN] * 100) / overall_absolute_change
+    metric_analysis_df["value_change_wrt_overall"] = ((metric_analysis_df[NUMERATOR_COLUMN] - metric_analysis_df[
+        DENOMINATOR_COLUMN]) * 100) / overall_absolute_change
     metric_analysis_df["value_change_wrt_overall"] = metric_analysis_df["value_change_wrt_overall"].abs()
     metric_analysis_df["percentage_change_wrt_overall"] = (metric_analysis_df[
                                                                NUMERATOR_COLUMN_PERCENTAGE] - overall_change_percentage)
@@ -74,7 +70,7 @@ if __name__ == '__main__':
     # Configuration of parameters
     FILTER_THRESHOLD = 2
     SEGMENT_CATEGORIES = ["country", "is_vip"]
-    IGNORE_USER_TYPES = ["non_paying","abstained_yesterday","abstained_today"]
+    IGNORE_USER_TYPES = ["non_paying", "abstained_yesterday", "abstained_today"]
 
     # Detailed Configuration of parameters
     use_parallel_processing = True
@@ -82,7 +78,6 @@ if __name__ == '__main__':
     NUMERATOR_COLUMN = 'purchased_amount_today'
     DENOMINATOR_COLUMN = 'purchased_amount_yesterday'
     NUMERATOR_COLUMN_PERCENTAGE = 'amount_change_percentage'
-
 
     df = getDf(FILEPATH)
     print("Read CSV")
@@ -95,9 +90,10 @@ if __name__ == '__main__':
                                 axis=1)).compute(scheduler='processes')
     else:
         df['user_type'] = df.apply(lambda x: user_type(x[DENOMINATOR_COLUMN], x[NUMERATOR_COLUMN]),
-                                    axis=1)
+                                   axis=1)
 
-    results_df = analyse_and_print_observations(df,"total",SEGMENT_CATEGORIES,NUMERATOR_COLUMN,DENOMINATOR_COLUMN,NUMERATOR_COLUMN_PERCENTAGE,FILTER_THRESHOLD)
+    results_df = analyse_and_print_observations(df, "total", SEGMENT_CATEGORIES, NUMERATOR_COLUMN, DENOMINATOR_COLUMN,
+                                                NUMERATOR_COLUMN_PERCENTAGE, FILTER_THRESHOLD)
     print("\n***************************************\n")
-    results_df = analyse_and_print_observations(df,"average",SEGMENT_CATEGORIES,NUMERATOR_COLUMN,DENOMINATOR_COLUMN,NUMERATOR_COLUMN_PERCENTAGE,FILTER_THRESHOLD)
-
+    results_df = analyse_and_print_observations(df, "average", SEGMENT_CATEGORIES, NUMERATOR_COLUMN, DENOMINATOR_COLUMN,
+                                                NUMERATOR_COLUMN_PERCENTAGE, FILTER_THRESHOLD)
